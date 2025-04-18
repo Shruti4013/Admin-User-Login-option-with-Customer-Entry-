@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Form</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        h3 {
+            margin-top: 40px;
+            color: #333;
+        }
+        form input, form select, form button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        form button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-buttons button {
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .update-btn {
+            background-color: #4caf50;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .update-btn:hover {
+            background-color: #45a049;
+        }
+        .delete-btn:hover {
+            background-color: #e53935;
+        }
+    </style>
+    <script>
+        async function loadCustomers() {
+            const response = await fetch('/api/customers');
+            const customers = await response.json();
+            const table = document.getElementById("customerTable");
+            table.innerHTML = "";
+
+            customers.forEach(c => {
+                const row = `<tr>
+                    <form method="POST" action="/update-customer">
+                        <td><input type="text" name="id" value="${c.id}" readonly></td>
+                        <td><input type="text" name="name" value="${c.name}"></td>
+                        <td><input type="text" name="phno" value="${c.phone}"></td>
+                        <td><input type="text" name="address" value="${c.address}"></td>
+                        <td><input type="number" step="0.01" name="dues" value="${c.dues}"></td>
+                        <td class="action-buttons">
+                            <button type="submit" class="update-btn">Update</button>
+                    </form>
+                    <form method="POST" action="/delete-customer" style="display:inline;">
+                        <input type="hidden" name="id" value="${c.id}">
+                        <button type="submit" class="delete-btn">Delete</button>
+                    </form>
+                    </td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        window.onload = loadCustomers;
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Customer Entry Form</h2>
+        <form method="POST" action="/add-customer">
+            <input type="text" name="name" placeholder="Customer Name" required><br>
+            <input type="text" name="phone" placeholder="Phone Number" required><br>
+            <input type="text" name="address" placeholder="Address" required><br>
+            <input type="number" step="0.01" name="dues" placeholder="Dues" required><br>
+            <button type="submit">Add Customer</button>
+        </form>
+
+        <h3>Customer List</h3>
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Name</th><th>Phone Number</th><th>Address</th><th>Dues</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="customerTable"></tbody>
+        </table>
+    </div>
+
+</body>
+</html>
